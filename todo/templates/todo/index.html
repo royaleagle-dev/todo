@@ -1,0 +1,48 @@
+{%extends "todo/base.html"%}
+
+{%block form%}
+<h3 class = "mt-3">Todo List</h3>
+<hr>
+<form method = "POST" action = "{%url 'todo:saveTask'%}">
+	{%csrf_token%}
+	<input class = "form-control" type = "text" placeholder = "Enter a Task" name = "task"><br>
+	<input type = "hidden" value = ' ' name = "id">
+	<input class = "btn btn-primary btn-block" value = "Add Task" type = "submit">
+</form>
+
+<div class = "bg-info p-4 text-light mt-5">
+	<p>! In case you get stuck, double click on the input field, to add a new task</p>
+</div>
+{%endblock%}
+
+{%block info%}
+<div class = "mt-3">
+	<h3>Let's Organise Your day</h3>
+	<hr>
+	{%for task in tasks%}
+	<div>
+		<button class = "btn btn-primary" id = "task{{task.id}}" onclick = "editTask('task{{task.id}}')">{{task.name}}</button>
+		<a href = "{%url 'todo:delete' task.id%}" class = "btn btn-danger">Delete</a>
+		<hr>
+	</div>
+	{%endfor%}
+</div>
+{%endblock%}
+
+{%block otherJS%}
+<script>
+	function editTask(id){
+		var elem = document.getElementById(id);
+		var text = elem.innerHTML;
+		$('input[name="task"]').val(text);
+		$('input[type="submit"]').val('Update Task').removeClass('btn-primary').addClass('btn-info')
+		$('input[name="id"]').val(id.replace('task', ''));
+		$('form').attr('action', "{%url 'todo:editTask'%}");
+	}
+
+	$('input[name="task"]').dblclick(function(){
+		$("input[type='submit']").val('Add Task').removeClass('btn-info').addClass('btn-primary')
+		$("input[type='text']").val(' ');
+	})
+</script>
+{%endblock%}
